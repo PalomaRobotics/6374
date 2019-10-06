@@ -34,6 +34,7 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cIrSeekerSensorV3;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -58,7 +59,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.SensorMROpticalDis
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TestBot", group="Test")
+@Autonomous(name = "TestBot2018", group = "Auto")
 //@Disabled
 public class TestBot2018 extends LinearOpMode {
 
@@ -75,8 +76,8 @@ public class TestBot2018 extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        leftDrive  = hardwareMap.get(DcMotor.class, "DLeft");
+        rightDrive = hardwareMap.get(DcMotor.class, "Dright");
         //colorSensor=hardwareMap.get(ModernRoboticsI2cColorSensor.class,"color");
         //range = hardwareMap.get(ModernRoboticsI2cRangeSensor.class,"range");
         // Most robots need the motor on one side to be reversed to drive forward
@@ -92,8 +93,9 @@ public class TestBot2018 extends LinearOpMode {
         while (opModeIsActive()) {
             //gyroControl.FollowWhiteLine(leftDrive, rightDrive, -.3, colorSensor.red(), colorSensor.blue(), colorSensor.green());
 
-            leftDrive.setPower(gamepad1.left_stick_y);
-            rightDrive.setPower(gamepad1.right_stick_y);
+            //leftDrive.setPower(gamepad1.left_stick_y);
+            //rightDrive.setPower(gamepad1.right_stick_y);
+            leftDrive.setPower(0.25);
             telemetry.update();
         }
     }
