@@ -77,7 +77,7 @@ public class TestBot2018 extends LinearOpMode {
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
         leftDrive  = hardwareMap.get(DcMotor.class, "DLeft");
-        rightDrive = hardwareMap.get(DcMotor.class, "Dright");
+        rightDrive = hardwareMap.get(DcMotor.class, "DRight");
         //colorSensor=hardwareMap.get(ModernRoboticsI2cColorSensor.class,"color");
         //range = hardwareMap.get(ModernRoboticsI2cRangeSensor.class,"range");
         // Most robots need the motor on one side to be reversed to drive forward
