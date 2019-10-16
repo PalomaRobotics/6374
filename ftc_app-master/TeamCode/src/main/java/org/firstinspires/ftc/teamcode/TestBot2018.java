@@ -90,12 +90,22 @@ public class TestBot2018 extends LinearOpMode {
         runtime.reset();
 
         // run until the end of the match (driver presses STOP)
+
+        boolean foo = true;
         while (opModeIsActive()) {
+
+            if(foo)
+            {
+                foo = !foo;
+                EncoderClass.RunToEncoderDegree(leftDrive, 360,0.5, telemetry);
+                //EncoderClass.RunToEncoderValue(rightDrive, 100, 0.25);
+            }
+
             //gyroControl.FollowWhiteLine(leftDrive, rightDrive, -.3, colorSensor.red(), colorSensor.blue(), colorSensor.green());
 
             //leftDrive.setPower(gamepad1.left_stick_y);
             //rightDrive.setPower(gamepad1.right_stick_y);
-            leftDrive.setPower(0.25);
+            //leftDrive.setPower(0.25);
             telemetry.update();
         }
     }
