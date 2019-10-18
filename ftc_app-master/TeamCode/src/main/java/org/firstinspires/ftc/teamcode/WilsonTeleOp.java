@@ -14,7 +14,11 @@ import com.qualcomm.robotcore.hardware.LegacyModule;
 import com.qualcomm.robotcore.hardware.LegacyModulePortDevice;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
-
+//used by i2c sensors (Modern Robotics Range Ultrasonic Sensor)
+import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.I2cDevice;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 
 
 /**
@@ -44,6 +48,15 @@ public class WilsonTeleOp extends OpMode
 	//You may or may not also need to import the library for the legacy module?:
 	//import com.qualcomm.robotcore.hardware.LegacyModule;
 	//import com.qualcomm.robotcore.hardware.LegacyModulePortDevice;
+
+	//i2c declaraions (Modern Robotics Range Ultrasonic Sensor)
+	byte[] range1Cache; //The read will return an array of bytes. They are stored in this variable
+	I2cAddr RANGE1ADDRESS = new I2cAddr(0x14); //Default I2C address for MR Range (7-bit)
+	public static final int RANGE1_REG_START = 0x04; //Register to start reading
+	public static final int RANGE1_READ_LENGTH = 2; //Number of byte to read
+	public I2cDevice RANGE1;
+	public I2cDeviceSynch RANGE1Reader;
+
 
 	ModernRoboticsI2cGyro gyro;   //Don't forget to import the proper library: import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 
@@ -85,6 +98,13 @@ public class WilsonTeleOp extends OpMode
 		irSeeker = hardwareMap.irSeekerSensor.get("ir"); //THIS IS A I2C DEVICE. Find a IR Sensor on the robot named ir. ir is the name that appears in the phones configuration
 		odsSensor = hardwareMap.opticalDistanceSensor.get("OpticalSens"); //THIS IS AN ANALOG DEVICE. Find a ODS Sensor on the robot named OpticalSens. OpticalSens is the name that appears in the phones configuration
 		mySonar = hardwareMap.ultrasonicSensor.get("sonar"); //THIS DEVICE MUST BE ATTACHED TO THE LEGACY MODULE. Find a Ultrasonic Sensor on the robot named sonar. sonar is the name that appears in the phones configuration (ONLY WORKS WITH PORTS S5 AND S4)
+
+
+		//Modern Robotics Range Ultrasonic Sensor
+		RANGE1 = hardwareMap.i2cDevice.get("range");
+		RANGE1Reader = new I2cDeviceSynchImpl(RANGE1, RANGE1ADDRESS, false);
+		RANGE1Reader.engage();
+
 
 		//Gyro-specific variables
 		gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyroSens"); //THIS IS AN I2C DEVICE. Find a Gyro Sensor on the robot named gyroSens. gyroSens is the name that appears in the phones configuration
@@ -158,6 +178,14 @@ public class WilsonTeleOp extends OpMode
 		telemetry.addData("Sonar:", mySonar.getUltrasonicLevel()); //integers approaching 0 are close. Numbers approaching 255 are far away. Max distance is a little under 8 feet.
 		/////////////////////////////////////////////////////////////////////////////////
 
+		//Modern Robotics Ultrasonic Range Finder Example///////////////////////////////////////////////////////////////////////////////
+		range1Cache = RANGE1Reader.read(RANGE1_REG_START, RANGE1_READ_LENGTH);
+
+		telemetry.addData("Ultra Sonic", range1Cache[0] & 0xFF);
+		telemetry.addData("ODS", range1Cache[1] & 0xFF);
+		telemetry.update();
+		/////////////////////////////////////////////////////////////////////////////////
+
 		//MOVE MOTORS BASED ON JOYSTICK VALUES///////////////////////////////////////////////////////////
 		//left.setPower(gamepad1.left_stick_y); //gamepad1.right_stick_y
 		//right.setPower(gamepad1.right_stick_y); //gamepad1.right_stick_y
@@ -192,10 +220,11 @@ public class WilsonTeleOp extends OpMode
 		//ENCODER EXAMPLE////////////////////////////////////////////////////////////////
 		if(gamepad1.a) //if you press A button...
 		{
-			//EncoderClass.RunToEncoderDegree(right, 180, 0.25); //run the right motor 180 degrees at 25% power
-			//EncoderClass.RunToEncoderDegree(left, -180, 0.25);
-			//EncoderClass.RunToEncoderValue(right, 700, 0.25);
-			//EncoderClass.RunToEncoderValue(left, -700, 0.25); //run the left motor 700 encoder ticks in the opposite direction at 25% power
+			//this runs the motor 180 degrees and suspends code execution until it's done
+			EncoderClass.RunToEncoderDegree(left, EncoderClass.MotorType.NeveRest40,180,0.25,false);
+
+			//This runs the motor 180 degrees. Code continues to run while this is happening
+			EncoderClass.RunToEncoderDegreeAsync(left, EncoderClass.MotorType.NeveRest40,180,0.25,false);
 		}
 		/////////////////////////////////////////////////////////////////////////////////
 
