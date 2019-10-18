@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.Hardware;
 import com.qualcomm.robotcore.util.Range;
 @TeleOp(name = "EliHOLOTeleOp", group = "TeleOp")
 
-public class EliHOLOTeleOp extends OpMode {
+public class HoloTestTeleOp extends OpMode {
     private DcMotor LFD = null;
     private DcMotor RFD = null;
     private DcMotor LBD = null;

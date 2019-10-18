@@ -74,8 +74,9 @@ public class GyroClass{
         {
             try //attempt to correct for major off course
             {
-                EncoderClass.RunToEncoderDegree(right, -20, 0.25); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                EncoderClass.RunToEncoderDegree(left, 20, 0.25);
+                //the following two lines errored out with modifications to EncoderClass
+                //EncoderClass.RunToEncoderDegree(right, -20, 0.25); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                //EncoderClass.RunToEncoderDegree(left, 20, 0.25);
             }
             catch(NullPointerException ex)
             {
@@ -97,8 +98,10 @@ public class GyroClass{
         {
             try //attempt to correct for major off course
             {
-                EncoderClass.RunToEncoderDegree(right, 20, 0.25); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                EncoderClass.RunToEncoderDegree(left, -20, 0.25);
+
+                //the following two lines errored out with modifications to EncoderClass
+                //EncoderClass.RunToEncoderDegree(right, 20, 0.25); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                //EncoderClass.RunToEncoderDegree(left, -20, 0.25);
             }
             catch(NullPointerException ex)
             {
@@ -169,8 +172,10 @@ public class GyroClass{
             {
                 try //attempt to correct for major off course
                 {
-                    EncoderClass.RunToEncoderDegree(right, 20, 0.25); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                    EncoderClass.RunToEncoderDegree(left, -20, 0.25);
+
+                    //the following two lines errored out with modifications to EncoderClass
+                    //EncoderClass.RunToEncoderDegree(right, 20, 0.25); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                    //EncoderClass.RunToEncoderDegree(left, -20, 0.25);
                 } catch (NullPointerException ex) {
                     sleep(20); //wait a little bit if there is an error and try again on the next pass
                 } finally {
@@ -186,8 +191,9 @@ public class GyroClass{
             {
                 try //attempt to correct for major off course
                 {
-                    EncoderClass.RunToEncoderDegree(right, -20, 0.25); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                    EncoderClass.RunToEncoderDegree(left, 20, 0.25);
+                    //the following two lines errored out with modifications to EncoderClass
+                    //EncoderClass.RunToEncoderDegree(right, -20, 0.25); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                    //EncoderClass.RunToEncoderDegree(left, 20, 0.25);
                 } catch (NullPointerException ex) {
                     sleep(20); //wait a little bit if there is an error and try again on the next pass
                 } finally {

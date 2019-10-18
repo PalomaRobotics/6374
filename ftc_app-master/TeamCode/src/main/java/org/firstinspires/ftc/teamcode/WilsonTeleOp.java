@@ -192,10 +192,10 @@ public class WilsonTeleOp extends OpMode
 		//ENCODER EXAMPLE////////////////////////////////////////////////////////////////
 		if(gamepad1.a) //if you press A button...
 		{
-			EncoderClass.RunToEncoderDegree(right, 180, 0.25); //run the right motor 180 degrees at 25% power
+			//EncoderClass.RunToEncoderDegree(right, 180, 0.25); //run the right motor 180 degrees at 25% power
 			//EncoderClass.RunToEncoderDegree(left, -180, 0.25);
 			//EncoderClass.RunToEncoderValue(right, 700, 0.25);
-			EncoderClass.RunToEncoderValue(left, -700, 0.25); //run the left motor 700 encoder ticks in the opposite direction at 25% power
+			//EncoderClass.RunToEncoderValue(left, -700, 0.25); //run the left motor 700 encoder ticks in the opposite direction at 25% power
 		}
 		/////////////////////////////////////////////////////////////////////////////////
 

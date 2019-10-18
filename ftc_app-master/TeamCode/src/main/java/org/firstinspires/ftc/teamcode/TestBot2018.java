@@ -97,7 +97,7 @@ public class TestBot2018 extends LinearOpMode {
             if(foo)
             {
                 foo = !foo;
-                EncoderClass.RunToEncoderDegree(leftDrive, 360,0.5, telemetry);
+                //EncoderClass.RunToEncoderDegree(leftDrive, 360,0.5, telemetry);
                 //EncoderClass.RunToEncoderValue(rightDrive, 100, 0.25);
             }
 

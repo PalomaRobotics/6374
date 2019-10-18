@@ -55,7 +55,7 @@ public class WilsonSandbox extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    //private DcMotor rightDrive = null;
 
     @Override
     public void runOpMode() {
@@ -79,19 +79,38 @@ public class WilsonSandbox extends LinearOpMode {
         runtime.reset();
 
         // run until the end of the match (driver presses STOP)
+        /*
+        new Thread(new Runnable() {
+            public void run() {
+                EncoderClass.RunToEncoderDegree(leftDrive,180,0.25);
+            }
+        }).start();
+         */
 
+        //EncoderClass.RunToEncoderDegreeAsync(leftDrive, EncoderClass.MotorType.NeveRest40,180,0.25,false);
+        EncoderClass.RunToEncoderDegree(leftDrive, EncoderClass.MotorType.NeveRest40,180,0.25,false);
 
-        //while (opModeIsActive()) {
-        int degree = (int)(180 * (1120 / 360));
+        while (opModeIsActive()) {
+            //foo++;
+            //telemetry.addData("foo_Count:", foo);
+            telemetry.addData("encoder-fwd", leftDrive.getCurrentPosition() + "  busy=" + leftDrive.isBusy());
+            telemetry.update();
+            idle();
+        }
+        /*
         leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftDrive.setTargetPosition(degree);
         leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftDrive.setTargetPosition(5000);
         leftDrive.setPower(0.25);
 
-        while (leftDrive.isBusy())
+        while (opModeIsActive() && leftDrive.isBusy())
         {
-
+            telemetry.addData("encoder-fwd", leftDrive.getCurrentPosition() + "  busy=" + leftDrive.isBusy());
+            telemetry.update();
+            idle();
         }
         leftDrive.setPower(0.0);
+        */
+
     }
 }
