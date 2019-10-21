@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 
 
 public class GyroClass{
 
-    private DcMotor left, right;
+    private DcMotor lf, rf, lb, rb;
     private double leftPwr = 0.25;
     private double rightPwr = 0.25;
     private int heading = 0;              // Gyro integrated heading
@@ -16,15 +15,17 @@ public class GyroClass{
     private ModernRoboticsI2cGyro gyro;
 
 
-    public GyroClass(ModernRoboticsI2cGyro gyroObject, DcMotor leftMotorObject, DcMotor rightMotorObject, double speed)
+    public GyroClass(ModernRoboticsI2cGyro gyroObject, DcMotor frontLeftMotor, DcMotor frontRightMotor, DcMotor backLeftMotor, DcMotor backRightMotor, double speed)
     {
         //You will need to create motor and gyro objects from your main class and pass them as parameters to this constructor
         //The turn method uses a loop that ties up the robot for a while which could result in a "stuck in loop" exception.
         //To fix this, you can increase the watchdog timer with this command from your init:
         //super.msStuckDetectLoop = 30000;
 
-        this.left = leftMotorObject; //move the parameters objects into their respective class-level variables
-        this.right = rightMotorObject;
+        this.lf = frontLeftMotor; //move the parameter objects into their respective class-level variables
+        this.rf = frontRightMotor;
+        this.lb = backLeftMotor;
+        this.rb = backRightMotor;
         this.leftPwr = speed; //0.25
         this.rightPwr = speed; //0.25
 
@@ -47,16 +48,12 @@ public class GyroClass{
 
         if(heading > 180 && heading < 359 && allStop == false) { //if trending left...
             leftPwr += 0.001; //move right by increasing power to left motor
-            rightPwr -= 0.001;
-            left.setPower(leftPwr);
-            right.setPower(rightPwr);
+            rightPwr -= 0.001; //and decreasing power on right
         }
 
         if(heading < 180 && heading > 1 && allStop == false) { //if trending right...
             leftPwr -= 0.001; //turn left by decreasing power on left motor
             rightPwr += 0.001;
-            left.setPower(leftPwr);
-            right.setPower(rightPwr);
         }
 
         if((heading > 180 && heading < 350) || (heading < 180 && heading > 10))  //if major trend to left OR right...
@@ -69,14 +66,28 @@ public class GyroClass{
             }
         }
 
+        lf.setPower(leftPwr);
+        lb.setPower(leftPwr);
+        lb.setPower(rightPwr);
+        rb.setPower(rightPwr);
+
+
         /////////////////////////////////////////////////////////////RECOVER FROM ALL STOP: if too far LEFT...
         if (heading > 180 && heading < 358 && allStop == true)
         {
             try //attempt to correct for major off course
             {
-                //the following two lines errored out with modifications to EncoderClass
-                //EncoderClass.RunToEncoderDegree(right, -20, 0.25); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                //EncoderClass.RunToEncoderDegree(left, 20, 0.25);
+                EncoderClass.RunToEncoderDegreeAsync(rf, EncoderClass.MotorType.NeveRest60,-20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                EncoderClass.RunToEncoderDegreeAsync(rb, EncoderClass.MotorType.NeveRest60,-20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+
+                EncoderClass.RunToEncoderDegreeAsync(lf, EncoderClass.MotorType.NeveRest60,20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                EncoderClass.RunToEncoderDegreeAsync(lb, EncoderClass.MotorType.NeveRest60,20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+
+                while (rf.isBusy() || rb.isBusy() || lf.isBusy() || lb.isBusy()) //wait while the motor moves to the desired position
+                {
+
+                }
+//LEFT OFF HERE: NEED TO CONTINUE LOOKING AT CODE FROM HERE DOWN AND CORRECTING AS NEEDED TO MAKE THIS WORK
             }
             catch(NullPointerException ex)
             {
