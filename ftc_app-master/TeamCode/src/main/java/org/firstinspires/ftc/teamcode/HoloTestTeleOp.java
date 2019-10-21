@@ -9,6 +9,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Hardware;
 import com.qualcomm.robotcore.util.Range;
+
+import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.I2cDevice;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 @TeleOp(name = "EliHOLOTeleOp", group = "TeleOp")
 
 public class HoloTestTeleOp extends OpMode {
@@ -18,16 +23,19 @@ public class HoloTestTeleOp extends OpMode {
     private DcMotor RBD = null;
 
     public void init(){
-      LFD = hardwareMap.get(DcMotor.class,"DLeftF");
-      RFD = hardwareMap.get(DcMotor.class,"DRightF");
-      LBD = hardwareMap.get(DcMotor.class,"DLeftB");
-      RBD = hardwareMap.get(DcMotor.class,"DRightB");
+      LFD = hardwareMap.get(DcMotor.class,"FL");
+      RFD = hardwareMap.get(DcMotor.class,"FR");
+      LBD = hardwareMap.get(DcMotor.class,"BL");
+      RBD = hardwareMap.get(DcMotor.class,"BR");
     }
     public void loop() {
         double inx = gamepad1.left_stick_x;
         double iny = gamepad1.left_stick_y;
-        double dir = Math.asin(inx) * Math.acos(iny);
-
+        float[] dirs = HolonomicDrive.RoboMoveDir(HolonomicDrive.XYtoDeg((float)inx,(float)iny));
+        LFD.setPower(dirs[0]);
+        RFD.setPower(dirs[1]);
+        LBD.setPower(dirs[2]);
+        RBD.setPower(dirs[3]);
     }
 
 

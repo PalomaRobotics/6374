@@ -100,7 +100,7 @@ public class WilsonTeleOp extends OpMode
 		*/
 
 		//GyroClass
-		gyroObject = new GyroClass(gyro, fl, fr, 0.25); //Instantate the variable we made earlier by storing an object in it. Initialize the object using the motos and gyro object we created above
+	//	gyroObject = new GyroClass(gyro, fl, fr, 0.25); //Instantate the variable we made earlier by storing an object in it. Initialize the object using the motos and gyro object we created above
 
 		super.msStuckDetectLoop = 30000;
 
