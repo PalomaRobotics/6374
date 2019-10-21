@@ -41,7 +41,7 @@ public class WilsonCodeExamples extends OpMode
 	IrSeekerSensor irSeeker; //Don't forget to import the proper library: import com.qualcomm.robotcore.hardware.IrSeekerSensor;
 	OpticalDistanceSensor odsSensor;  //Don't forget to import the proper library: import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
-	UltrasonicSensor mySonar; //Don't forget to import the proper library: import com.qualcomm.robotcore.hardware.UltrasonicSensor;
+	UltrasonicSensor mySonar; //LEGO DEVICE!! Don't forget to import the proper library: import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 	//You may or may not also need to import the library for the legacy module?:
 	//import com.qualcomm.robotcore.hardware.LegacyModule;
 	//import com.qualcomm.robotcore.hardware.LegacyModulePortDevice;
@@ -85,16 +85,18 @@ public class WilsonCodeExamples extends OpMode
 		//Code to initialize all variables and whatnot goes here. This method runs once when the code first starts
 
 		//Motors
-		MC1 = hardwareMap.dcMotorController.get("MC1"); //Find a motor controller on the robot named MC1. Note, this must match the name in the phone configuration
-		left = hardwareMap.dcMotor.get("left"); //Find a motor on the robot named left
-		right = hardwareMap.dcMotor.get("right"); //Find a motor on the robot named right
-		right.setDirection(DcMotor.Direction.REVERSE); //somtimes you may need to reverse the direction of a motor to insure positive number run forward and negative numbers run backward
+		DcMotor fl; //class-level variable for the left motor.
+		DcMotor fr; //class-level variable for the right motor.
+		DcMotor bl; //class-level variable for the left motor.
+		DcMotor br; //class-level variable for the right motor.
+
+		right.setDirection(DcMotor.Direction.REVERSE); //sometimes you may need to reverse the direction of a motor to insure positive number run forward and negative numbers run backward
 
 		//Sensors
 		touchSensor = hardwareMap.touchSensor.get("touch1"); //THIS IS A DIGITAL DEVICE. Find a touchsensor on the robot named touch1. touch1 is the name that appears in the phones configuration
 		irSeeker = hardwareMap.irSeekerSensor.get("ir"); //THIS IS A I2C DEVICE. Find a IR Sensor on the robot named ir. ir is the name that appears in the phones configuration
 		odsSensor = hardwareMap.opticalDistanceSensor.get("OpticalSens"); //THIS IS AN ANALOG DEVICE. Find a ODS Sensor on the robot named OpticalSens. OpticalSens is the name that appears in the phones configuration
-		mySonar = hardwareMap.ultrasonicSensor.get("sonar"); //THIS DEVICE MUST BE ATTACHED TO THE LEGACY MODULE. Find a Ultrasonic Sensor on the robot named sonar. sonar is the name that appears in the phones configuration (ONLY WORKS WITH PORTS S5 AND S4)
+		mySonar = hardwareMap.ultrasonicSensor.get("sonar"); //LEGO DEVICE!! THIS DEVICE MUST BE ATTACHED TO THE LEGACY MODULE. Find a Ultrasonic Sensor on the robot named sonar. sonar is the name that appears in the phones configuration (ONLY WORKS WITH PORTS S5 AND S4)
 
 
 		//Modern Robotics Range Ultrasonic Sensor
@@ -121,7 +123,7 @@ public class WilsonCodeExamples extends OpMode
 		*/
 
 		//GyroClass
-		gyroObject = new GyroClass(gyro, left, right, 0.25); //Instantate the variable we made earlier by storing an object in it. Initialize the object using the motos and gyro object we created above
+		//gyroObject = new GyroClass(gyro, left, right, 0.25); //Instantate the variable we made earlier by storing an object in it. Initialize the object using the motos and gyro object we created above
 
 		super.msStuckDetectLoop = 30000;
 
@@ -171,7 +173,7 @@ public class WilsonCodeExamples extends OpMode
 		telemetry.addData("Normal", odsSensor.getLightDetected());
 		/////////////////////////////////////////////////////////////////////////////////
 
-		//ULTRASONIC SENSOR EXAMPLE///////////////////////////////////////////////////////////
+		//LEGO ULTRASONIC SENSOR EXAMPLE///////////////////////////////////////////////////////////
 		telemetry.addData("Sonar:", mySonar.getUltrasonicLevel()); //integers approaching 0 are close. Numbers approaching 255 are far away. Max distance is a little under 8 feet.
 		/////////////////////////////////////////////////////////////////////////////////
 
