@@ -136,12 +136,12 @@ public class GyroClass{
 
     private void RunStraight()
     {
-        left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //disable encoder for running straight
-        right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftPwr = 0.25; //resume nominal power
-        rightPwr = 0.25;
-        left.setPower(leftPwr);
-        right.setPower(rightPwr);
+    //  left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //disable encoder for running straigh
+    //  right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    //    leftPwr = 0.25; //resume nominal power
+    //    rightPwr = 0.25;
+    //    left.setPower(leftPwr);
+    //    right.setPower(rightPwr);
     }
 
     public void ResetHeading()
