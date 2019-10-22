@@ -29,13 +29,17 @@ public class HoloTestTeleOp extends OpMode {
       RBD = hardwareMap.get(DcMotor.class,"BR");
     }
     public void loop() {
-        double inx = gamepad1.left_stick_x;
-        double iny = gamepad1.left_stick_y;
+        double inx = (double)gamepad1.left_stick_x;
+        double iny = (double)gamepad1.left_stick_y;
         float[] dirs = HolonomicDrive.RoboMoveDir(HolonomicDrive.XYtoDeg((float)inx,(float)iny));
         LFD.setPower(dirs[0]);
         RFD.setPower(dirs[1]);
         LBD.setPower(dirs[2]);
         RBD.setPower(dirs[3]);
+        telemetry.addData("Stick X", gamepad1.left_stick_x);
+        telemetry.addData("Stick Y", gamepad1.left_stick_y);
+        telemetry.addData("Dirctions", dirs);
+        telemetry.update();
     }
 
 

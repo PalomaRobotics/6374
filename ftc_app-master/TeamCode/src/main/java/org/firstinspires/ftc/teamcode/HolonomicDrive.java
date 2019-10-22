@@ -17,7 +17,7 @@ public class HolonomicDrive {
     public static float[] RoboMoveDir(float Degrees)
     {
         float d = Degrees % 360;
-        fr=((d+45)/90)-2;
+        fr=(((d+45)%360)/90)-2;
         if (fr>1)
         {
             fr=fr-2*(fr-1);
@@ -28,7 +28,7 @@ public class HolonomicDrive {
         }
 
 
-        fl=((d+315)/90)-2;
+        fl=(((d+315)%360)/90)-2;
         if (fl>1)
         {
             fl=fl-2*(fl-1);
@@ -39,7 +39,7 @@ public class HolonomicDrive {
         }
 
 
-        br=((d+135)/90)-2;
+        br=(((d+135)%360)/90)-2;
         if (br>1)
         {
             br=br-2*(br-1);
@@ -50,7 +50,7 @@ public class HolonomicDrive {
         }
 
 
-        bl=((d+255)/90)-2;
+        bl=(((d+255)%360)/90)-2;
         if (bl>1)
         {
             bl=bl-2*(bl-1);
@@ -61,7 +61,7 @@ public class HolonomicDrive {
         float[] ar = {fl,fr,bl,br};
         for(int i=0;i<ar.length;i++)
         {
-            if(!(ar[i]>0 && ar[i]<1))
+            if(!(ar[i]>-1 && ar[i]<1))
             {
                 ar[i]=0;
             }
@@ -77,7 +77,7 @@ public class HolonomicDrive {
 
     public static float XYtoDeg(float x, float y)
     {
-        double dr = Math.atan(y/x);
+        double dr = Math.atan(-y/x);
         double dd = dr*180/Math.PI-90;
         if(x<0)
         {
