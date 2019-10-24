@@ -5,10 +5,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import java.sql.Array;
 
 public class HolonomicDrive {
-    private static DcMotor LFD = null;
-    private static DcMotor RFD = null;
-    private static DcMotor LBD = null;
-    private static DcMotor RBD = null;
     private static float fr;
     private static float fl;
     private static float br;
@@ -58,9 +54,10 @@ public class HolonomicDrive {
         else if (bl<-1) {
             bl = bl - 2 * (bl + 1);
         }
-        float[] ar = {fl,fr,bl,br};
+        float[] ar = {br,-fr,fr,-br};
         for(int i=0;i<ar.length;i++)
         {
+            //ar[i]=(float)Math.pow(1.5,Math.abs(ar[i]))*(ar[i]/Math.abs(ar[i]));
             if(!(ar[i]>-1 && ar[i]<1))
             {
                 ar[i]=0;
@@ -77,11 +74,16 @@ public class HolonomicDrive {
 
     public static float XYtoDeg(float x, float y)
     {
-        double dr = Math.atan(y/x);
+        x=-x;
+        double dr = Math.atan(x/y);
         double dd = dr*180/Math.PI-90;
-        if(x<0)
+        if(y<0&&dd<0)
         {
-            dd+=180;
+            dd-=90;
+        }
+        if(y<0&&dd>0)
+        {
+            dd+=90;
         }
         return (float) dd;
     }
