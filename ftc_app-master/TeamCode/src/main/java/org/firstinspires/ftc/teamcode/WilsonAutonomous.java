@@ -36,178 +36,32 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 
-/**
- * TeleOp Mode
- * <p>
- * Enables control of the robot via the gamepad
- */
-@Autonomous (name = "BTA ", group = "Autonomous")
+@Autonomous (name = "WilsonAutonomous", group = "Autonomous")
 public class WilsonAutonomous extends LinearOpMode {
 
-	DcMotorController controller;
-	DcMotor treadRight;
-	DcMotor treadLeft;
-	DcMotor liftRight;
-	DcMotor liftLeft;
-	DcMotor intake;
-	DcMotor spinner;// Variable that Controls the turntable
-	int timer = 0;
-
-	void Drive(int time) throws InterruptedException {
-
-		while(time>0) {
-			treadRight.setPower(.3);
-			treadLeft.setPower(.4);
-			intake.setPower(.5);
-
-		sleep(1);
-
-			time-- ;
-			timer++;
-		}
-
-		treadRight.setPower(0);
-		treadLeft.setPower(0);
+	DcMotor FL;
+	DcMotor FR;
+	DcMotor BL;
+	DcMotor BR;
 
 
-	}
-	void TurnRight(int time) throws InterruptedException{
 
-		while(time>0) {
-			treadRight.setPower(0);
-			treadLeft.setPower(.3);
-			sleep(1);
-			time --;
-			timer++;
-		}
-
-		treadRight.setPower(0);
-		treadLeft.setPower(0);
-
-
-	}
-	void TurnLeft(int time) throws InterruptedException{
-
-		while(time>0) {
-			treadRight.setPower(0.3);
-			treadLeft.setPower(0);
-			sleep(1);
-			time --;
-			timer++;
-		}
-
-		treadRight.setPower(0);
-		treadLeft.setPower(0);
-
-	}
-	void DriveBackwards(int time) throws InterruptedException{
-
-		while(time>0) {
-			treadRight.setPower(-.3);
-			treadLeft.setPower(-.3);
-			sleep(1);
-			time --;
-			timer++;
-		}
-
-		treadRight.setPower(0);
-		treadLeft.setPower(0);
-
-
-	}
-	void Lift(int time) throws InterruptedException{
-		while(time>0) {
-			liftLeft.setPower(.3);
-			liftRight.setPower(.3);
-			sleep(1);
-			time--;
-			timer++;
-		}
-	}
-	void Intake(int time) throws InterruptedException{
-		while(time>0) {
-			intake.setPower(-.3);
-
-			sleep(1);
-			time--;
-			timer++;
-		}
-	}
-
-
-	/**
-	 * Constructor
-	 */
 
 	@Override
 	public void runOpMode() throws InterruptedException {
-		controller = hardwareMap.dcMotorController.get("controller");
+		FL = hardwareMap.dcMotor.get("FL");
+		BL = hardwareMap.dcMotor.get("BL");
+		BL.setDirection(DcMotor.Direction.REVERSE);
 
-		treadRight = hardwareMap.dcMotor.get("treadRight");
-		treadLeft = hardwareMap.dcMotor.get("treadLeft");
-		treadLeft.setDirection(DcMotor.Direction.REVERSE);
+		FR = hardwareMap.dcMotor.get("FR");
+		BR = hardwareMap.dcMotor.get("BR");
+		BR.setDirection(DcMotor.Direction.REVERSE);
 
-		liftRight = hardwareMap.dcMotor.get("liftRight");
-		Drive(8000);
-		Drive(1000);
-		liftLeft = hardwareMap.dcMotor.get("liftLeft");
-		liftRight.setDirection(DcMotor.Direction.REVERSE);
 
-		intake = hardwareMap.dcMotor.get("intake");
-		spinner = hardwareMap.dcMotor.get("spinner");
 		waitForStart();
-		telemetry.addData("Time To Travel: ", "" + timer);
-
-		while(true)
-		{
-		}
+		//telemetry.addData("Time To Travel: ", "" + timer);
 
 	}
 
-	/*
-	 * Code to run when the op mode is initialized goes here
-	 * 
-	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#init()
-
-
-	/*
-	 * This method will be called repeatedly in a loop
-	 * 
-	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#run()
-	 */
-
-
-	/*
-	 * Code to run when the op mode is first disabled goes here
-	 * 
-	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#stop()
-	 */
-	
-	/*
-	 * This method scales the joystick input so for low joystick values, the 
-	 * scaled value is less than linear.  This is to make it easier to drive
-	 * the robot more precisely at slower speeds.
-	 */
-	double scaleInput(double dVal)  {
-		double[] scaleArray = { 0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
-				0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00 };
-		
-		// get the corresponding index for the scaleInput array.
-		int index = (int) (dVal * 16.0);
-		if (index < 0) {
-			index = -index;
-		} else if (index > 16) {
-			index = 16;
-		}
-		
-		double dScale = 0.0;
-		if (dVal < 0) {
-			dScale = -scaleArray[index];
-		} else {
-			dScale = scaleArray[index];
-		}
-		
-		return dScale;
-	}
 
 }
