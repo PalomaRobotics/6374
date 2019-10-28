@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 
 public class GyroClass{
 
@@ -13,19 +15,23 @@ public class GyroClass{
     private boolean allStop = false;
     private int prevLeftValue, prevRightValue;
     private ModernRoboticsI2cGyro gyro;
+    private double adjustmentSpeed = 0.50;
+    private double speed = 0.0;
+    Telemetry telemetry;
 
-
-    public GyroClass(ModernRoboticsI2cGyro gyroObject, DcMotor frontLeftMotor, DcMotor frontRightMotor, DcMotor backLeftMotor, DcMotor backRightMotor, double speed)
+    public GyroClass(ModernRoboticsI2cGyro gyroObject, DcMotor frontLeftMotor, DcMotor frontRightMotor, DcMotor backLeftMotor, DcMotor backRightMotor, double speed, Telemetry telemetry)
     {
         //You will need to create motor and gyro objects from your main class and pass them as parameters to this constructor
         //The turn method uses a loop that ties up the robot for a while which could result in a "stuck in loop" exception.
         //To fix this, you can increase the watchdog timer with this command from your init:
         //super.msStuckDetectLoop = 30000;
+        this.telemetry = telemetry;
 
         this.lf = frontLeftMotor; //move the parameter objects into their respective class-level variables
         this.rf = frontRightMotor;
         this.lb = backLeftMotor;
         this.rb = backRightMotor;
+        this.speed = speed;
         this.leftPwr = speed; //0.25
         this.rightPwr = speed; //0.25
 
@@ -44,16 +50,20 @@ public class GyroClass{
 
     public void StraightLineUpdate()
     {
+
         heading = gyro.getHeading(); //get the heading info. The Modern Robotics' gyro sensor keeps track of the current heading for the Z axis only.
 
         if(heading > 180 && heading < 359 && allStop == false) { //if trending left...
-            leftPwr += 0.001; //move right by increasing power to left motor
-            rightPwr -= 0.001; //and decreasing power on right
+            //note these are reverse what you would think because the left motors are reversed
+            leftPwr -= 0.001; //move right by increasing power to left motor
+            rightPwr += 0.001; //and decreasing power on right
+            telemetry.addData("Minor correct", "TO RIGHT");
         }
 
         if(heading < 180 && heading > 1 && allStop == false) { //if trending right...
-            leftPwr -= 0.001; //turn left by decreasing power on left motor
-            rightPwr += 0.001;
+            leftPwr += 0.001; //turn left by decreasing power on left motor
+            rightPwr -= 0.001;
+            telemetry.addData("Minor correct", "TO LEFT");
         }
 
         if((heading > 180 && heading < 350) || (heading < 180 && heading > 10))  //if major trend to left OR right...
@@ -63,25 +73,30 @@ public class GyroClass{
                 leftPwr = 0.0; //Stop until corrected
                 rightPwr = 0.0;
                 allStop = true;
+                telemetry.addData("Major err", "ALL STOP");
             }
         }
 
         lf.setPower(leftPwr);
+        rf.setPower(rightPwr);
         lb.setPower(leftPwr);
-        lb.setPower(rightPwr);
         rb.setPower(rightPwr);
 
+        telemetry.addData("pwr", leftPwr);
 
         /////////////////////////////////////////////////////////////RECOVER FROM ALL STOP: if too far LEFT...
         if (heading > 180 && heading < 358 && allStop == true)
         {
             try //attempt to correct for major off course
             {
-                EncoderClass.RunToEncoderDegreeAsync(rf, EncoderClass.MotorType.NeveRest60,-20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                EncoderClass.RunToEncoderDegreeAsync(rb, EncoderClass.MotorType.NeveRest60,-20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                telemetry.addData("Major correct", "to right");
+                telemetry.update();
 
-                EncoderClass.RunToEncoderDegreeAsync(lf, EncoderClass.MotorType.NeveRest60,20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                EncoderClass.RunToEncoderDegreeAsync(lb, EncoderClass.MotorType.NeveRest60,20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                EncoderClass.RunToEncoderDegreeAsync(rf, EncoderClass.MotorType.NeveRest60,20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                EncoderClass.RunToEncoderDegreeAsync(rb, EncoderClass.MotorType.NeveRest60,20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+
+                EncoderClass.RunToEncoderDegreeAsync(lf, EncoderClass.MotorType.NeveRest60,-20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                EncoderClass.RunToEncoderDegreeAsync(lb, EncoderClass.MotorType.NeveRest60,-20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
 
                 while (rf.isBusy() || rb.isBusy() || lf.isBusy() || lb.isBusy()) //wait while the motor moves to the desired position
                 {
@@ -114,11 +129,14 @@ public class GyroClass{
                 //EncoderClass.RunToEncoderDegree(right, 20, 0.25); //use encoders to move the wheels 20 degrees at a time in opposite directions
                 //EncoderClass.RunToEncoderDegree(left, -20, 0.25);
 
-                EncoderClass.RunToEncoderDegreeAsync(rf, EncoderClass.MotorType.NeveRest60,20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                EncoderClass.RunToEncoderDegreeAsync(rb, EncoderClass.MotorType.NeveRest60,20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                telemetry.addData("Major correct", "to left");
+                telemetry.update();
 
-                EncoderClass.RunToEncoderDegreeAsync(lf, EncoderClass.MotorType.NeveRest60,-20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                EncoderClass.RunToEncoderDegreeAsync(lb, EncoderClass.MotorType.NeveRest60,-20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                EncoderClass.RunToEncoderDegreeAsync(rf, EncoderClass.MotorType.NeveRest60,-20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                EncoderClass.RunToEncoderDegreeAsync(rb, EncoderClass.MotorType.NeveRest60,-20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+
+                EncoderClass.RunToEncoderDegreeAsync(lf, EncoderClass.MotorType.NeveRest60,20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                EncoderClass.RunToEncoderDegreeAsync(lb, EncoderClass.MotorType.NeveRest60,20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
             }
             catch(NullPointerException ex)
             {
@@ -136,16 +154,22 @@ public class GyroClass{
         /////////////////////////////////////////////////////////////
 
         if(heading >= 359 || heading <= 1) { //if on course...
+            allStop = false;
             RunStraight();
         }
+        telemetry.update();
     }
 
     private void RunStraight()
     {
     //  left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //disable encoder for running straight
     //  right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    //    leftPwr = 0.25; //resume nominal power
-    //    rightPwr = 0.25;
+        telemetry.addData("RUN STRAIGHT", speed);
+
+        leftPwr = speed; //resume nominal power
+        rightPwr = speed;
+        allStop = false;
+
     //    left.setPower(leftPwr);
     //    right.setPower(rightPwr);
     }
@@ -193,11 +217,11 @@ public class GyroClass{
                     //the following two lines errored out with modifications to EncoderClass
                     //EncoderClass.RunToEncoderDegree(right, 20, 0.25); //use encoders to move the wheels 20 degrees at a time in opposite directions
                     //EncoderClass.RunToEncoderDegree(left, -20, 0.25);
-                    EncoderClass.RunToEncoderDegreeAsync(rf, EncoderClass.MotorType.NeveRest60,20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                    EncoderClass.RunToEncoderDegreeAsync(rb, EncoderClass.MotorType.NeveRest60,20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                    EncoderClass.RunToEncoderDegreeAsync(rf, EncoderClass.MotorType.NeveRest60,20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                    EncoderClass.RunToEncoderDegreeAsync(rb, EncoderClass.MotorType.NeveRest60,20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
 
-                    EncoderClass.RunToEncoderDegreeAsync(lf, EncoderClass.MotorType.NeveRest60,-20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                    EncoderClass.RunToEncoderDegreeAsync(lb, EncoderClass.MotorType.NeveRest60,-20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                    EncoderClass.RunToEncoderDegreeAsync(lf, EncoderClass.MotorType.NeveRest60,-20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                    EncoderClass.RunToEncoderDegreeAsync(lb, EncoderClass.MotorType.NeveRest60,-20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
                 } catch (NullPointerException ex) {
                     sleep(20); //wait a little bit if there is an error and try again on the next pass
                 } finally {
