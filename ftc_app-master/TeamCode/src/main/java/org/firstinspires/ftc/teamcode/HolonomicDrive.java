@@ -10,6 +10,14 @@ public class HolonomicDrive {
     private static float br;
     private static float bl;
 
+    public static float[] RoboRotate(float power)
+    {
+        power = -power;
+        float[] ar = {power,power,power,power};
+       return ar;
+    };
+
+
     public static float[] RoboMoveDir(float Degrees)
     {
         float d = Degrees % 360;
@@ -61,7 +69,7 @@ public class HolonomicDrive {
             {
                 ar[i]=0;
             }
-            if(ar[i]>=0) {
+            /*if(ar[i]>=0) {
                 if (ar[i] < 0.75 && ar[i] > 0) {
                     ar[i] = ar[i] / 3;
                 } else if (ar[i] > 0.75) {
@@ -78,7 +86,7 @@ public class HolonomicDrive {
                     ar[i] = 0;}
                 ar[i]=ar[i]*-1;
 
-            }
+            }*/
 
 
         }
@@ -92,17 +100,13 @@ public class HolonomicDrive {
 
     public static float XYtoDeg(float x, float y)
     {
-        x=-x;
-        double dr = Math.atan(x/y);
+        double dr = Math.atan(y/x);
         double dd = dr*180/Math.PI-90;
-        if(y<0&&dd<0)
+        if(x<0)
         {
-            dd-=90;
+            dd+=180;
         }
-        if(y<0&&dd>0)
-        {
-            dd+=90;
-        }
+
         return (float) dd;
     }
 

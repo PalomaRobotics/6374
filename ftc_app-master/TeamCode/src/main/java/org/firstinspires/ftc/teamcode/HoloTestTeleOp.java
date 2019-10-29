@@ -32,13 +32,19 @@ public class HoloTestTeleOp extends OpMode {
         double inx = (double)gamepad1.left_stick_x;
         double iny = (double)gamepad1.left_stick_y;
         float[] dirs = HolonomicDrive.RoboMoveDir(HolonomicDrive.XYtoDeg((float)inx,(float)iny));
+        float[] rotToAdd = HolonomicDrive.RoboRotate(gamepad1.right_stick_x);
+        for(int i=0;i<rotToAdd.length;i++)
+        {
+            dirs[i]=(dirs[i]+rotToAdd[i])/2;
+        }
         LFD.setPower(dirs[0]);
         RFD.setPower(dirs[1]);
         LBD.setPower(dirs[2]);
         RBD.setPower(dirs[3]);
         telemetry.addData("Stick X", gamepad1.left_stick_x);
         telemetry.addData("Stick Y", gamepad1.left_stick_y);
-        telemetry.addData("Dirctions", ((Math.round(dirs[0]*100)/100)));
+        telemetry.addData("Powers", (String.valueOf(Math.round(dirs[0]*100)/100)+String.valueOf(Math.round(dirs[1]*100)/100)+String.valueOf(Math.round(dirs[2]*100)/100)+String.valueOf(Math.round(dirs[3]*100)/100)));
+        telemetry.addData("Direction",(HolonomicDrive.XYtoDeg((float)inx,(float)iny)));
         telemetry.update();
     }
 
