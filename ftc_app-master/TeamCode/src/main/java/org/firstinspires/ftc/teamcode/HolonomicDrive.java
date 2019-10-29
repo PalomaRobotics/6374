@@ -57,11 +57,29 @@ public class HolonomicDrive {
         float[] ar = {br,-fr,fr,-br};
         for(int i=0;i<ar.length;i++)
         {
-            //ar[i]=(float)Math.pow(1.5,Math.abs(ar[i]))*(ar[i]/Math.abs(ar[i]));
-            if(!(ar[i]>-1 && ar[i]<1))
+            if(!(ar[i]>=-1 && ar[i]<1))
             {
                 ar[i]=0;
             }
+            if(ar[i]>=0) {
+                if (ar[i] < 0.75 && ar[i] > 0) {
+                    ar[i] = ar[i] / 3;
+                } else if (ar[i] > 0.75) {
+                    ar[i] = (ar[i] * 3) - 2;
+                } else
+                    ar[i] = 0;
+            }else{
+                ar[i]=Math.abs(ar[i]);
+                if (ar[i] < 0.75 && ar[i] > 0) {
+                    ar[i] = ar[i] / 3;
+                } else if (ar[i] > 0.75) {
+                    ar[i] = (ar[i] * 3) - 2;
+                } else{
+                    ar[i] = 0;}
+                ar[i]=ar[i]*-1;
+
+            }
+
 
         }
 

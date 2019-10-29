@@ -87,7 +87,7 @@ public class GyroClass{
                 {
 
                 }
-//LEFT OFF HERE: NEED TO CONTINUE LOOKING AT CODE FROM HERE DOWN AND CORRECTING AS NEEDED TO MAKE THIS WORK
+
             }
             catch(NullPointerException ex)
             {
@@ -113,6 +113,12 @@ public class GyroClass{
                 //the following two lines errored out with modifications to EncoderClass
                 //EncoderClass.RunToEncoderDegree(right, 20, 0.25); //use encoders to move the wheels 20 degrees at a time in opposite directions
                 //EncoderClass.RunToEncoderDegree(left, -20, 0.25);
+
+                EncoderClass.RunToEncoderDegreeAsync(rf, EncoderClass.MotorType.NeveRest60,20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                EncoderClass.RunToEncoderDegreeAsync(rb, EncoderClass.MotorType.NeveRest60,20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+
+                EncoderClass.RunToEncoderDegreeAsync(lf, EncoderClass.MotorType.NeveRest60,-20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                EncoderClass.RunToEncoderDegreeAsync(lb, EncoderClass.MotorType.NeveRest60,-20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
             }
             catch(NullPointerException ex)
             {
@@ -136,7 +142,7 @@ public class GyroClass{
 
     private void RunStraight()
     {
-    //  left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //disable encoder for running straigh
+    //  left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //disable encoder for running straight
     //  right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     //    leftPwr = 0.25; //resume nominal power
     //    rightPwr = 0.25;
@@ -187,6 +193,11 @@ public class GyroClass{
                     //the following two lines errored out with modifications to EncoderClass
                     //EncoderClass.RunToEncoderDegree(right, 20, 0.25); //use encoders to move the wheels 20 degrees at a time in opposite directions
                     //EncoderClass.RunToEncoderDegree(left, -20, 0.25);
+                    EncoderClass.RunToEncoderDegreeAsync(rf, EncoderClass.MotorType.NeveRest60,20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                    EncoderClass.RunToEncoderDegreeAsync(rb, EncoderClass.MotorType.NeveRest60,20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+
+                    EncoderClass.RunToEncoderDegreeAsync(lf, EncoderClass.MotorType.NeveRest60,-20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                    EncoderClass.RunToEncoderDegreeAsync(lb, EncoderClass.MotorType.NeveRest60,-20, 0.25, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
                 } catch (NullPointerException ex) {
                     sleep(20); //wait a little bit if there is an error and try again on the next pass
                 } finally {

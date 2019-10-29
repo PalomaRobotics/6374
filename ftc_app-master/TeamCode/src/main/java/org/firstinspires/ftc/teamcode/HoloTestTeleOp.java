@@ -38,7 +38,7 @@ public class HoloTestTeleOp extends OpMode {
         RBD.setPower(dirs[3]);
         telemetry.addData("Stick X", gamepad1.left_stick_x);
         telemetry.addData("Stick Y", gamepad1.left_stick_y);
-        telemetry.addData("Dirctions", dirs);
+        telemetry.addData("Dirctions", ((Math.round(dirs[0]*100)/100)));
         telemetry.update();
     }
 
