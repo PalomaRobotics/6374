@@ -5,22 +5,25 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import java.sql.Array;
 
 public class HolonomicDrive {
-    private static float fr;
-    private static float fl;
-    private static float br;
-    private static float bl;
+    private static double fr;
+    private static double fl;
+    private static double br;
+    private static double bl;
 
-    public static float[] RoboRotate(float power)
+    public static double[] RoboRotate(double power)
     {
         power = -power;
-        float[] ar = {power,power,power,power};
+        double[] ar = {power,power,power,power};
        return ar;
     };
 
-
-    public static float[] RoboMoveDir(float Degrees)
+    public static double[] RoboMoveXY(double x,double y)
     {
-        float d = Degrees % 360;
+        return RoboMoveDir(XYtoDeg(x,y));
+    }
+    public static double[] RoboMoveDir(double Degrees)
+    {
+        double d = Degrees % 360;
         fr=(((d+315)%360)/90)-2;
         if (fr>1)
         {
@@ -62,7 +65,7 @@ public class HolonomicDrive {
         else if (bl<-1) {
             bl = bl - 2 * (bl + 1);
         }
-        float[] ar = {br,-fr,fr,-br};
+        double[] ar = {br,-fr,fr,-br};
         for(int i=0;i<ar.length;i++)
         {
             if(!(ar[i]>=-1 && ar[i]<1))
@@ -98,7 +101,7 @@ public class HolonomicDrive {
     }
 
 
-    public static float XYtoDeg(float x, float y)
+    public static double XYtoDeg(double x, double y)
     {
         double dr = Math.atan(y/x);
         double dd = dr*180/Math.PI-90;
@@ -107,7 +110,7 @@ public class HolonomicDrive {
             dd+=180;
         }
 
-        return (float) dd;
+        return dd;
     }
 
 }
