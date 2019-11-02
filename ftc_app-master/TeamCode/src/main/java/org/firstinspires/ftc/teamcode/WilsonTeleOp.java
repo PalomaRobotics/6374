@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.IrSeekerSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.LegacyModule;
 import com.qualcomm.robotcore.hardware.LegacyModulePortDevice;
@@ -19,13 +20,13 @@ import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
-
+import com.qualcomm.robotcore.hardware.CRServo;
 
 /**
  * Created by robotics on 11/7/2016.
  */
 @TeleOp (name = "WilsonTeleOp", group = "TeleOp")
-@Disabled
+
 public class WilsonTeleOp extends OpMode
 {
 //test
@@ -38,7 +39,8 @@ public class WilsonTeleOp extends OpMode
 	private DcMotor fr; //class-level variable for the right motor.
 	private DcMotor bl; //class-level variable for the left motor.
 	private DcMotor br; //class-level variable for the right motor.
-
+	private CRServo servo360;
+	private Servo servo180;
 	//Sensor variables:
 	//These variables create objects based on the imported classes
 	//These variables do NOT correspond to the names in the phone's device configuration
@@ -74,16 +76,19 @@ public class WilsonTeleOp extends OpMode
 		//Code to initialize all variables and whatnot goes here. This method runs once when the code first starts
 
 		//Motors
-		fl = hardwareMap.dcMotor.get("FL"); //Find a motor on the robot named left
-		fr = hardwareMap.dcMotor.get("FR"); //Find a motor on the robot named right
-		bl = hardwareMap.dcMotor.get("BL"); //Find a motor on the robot named left
-		br = hardwareMap.dcMotor.get("BR"); //Find a motor on the robot named right
-		fr.setDirection(DcMotor.Direction.REVERSE); //somtimes you may need to reverse the direction of a motor to insure positive number run forward and negative numbers run backward
-		br.setDirection(DcMotor.Direction.REVERSE); //somtimes you may need to reverse the direction of a motor to insure positive number run forward and negative numbers run backward
+		//fl = hardwareMap.dcMotor.get("FL"); //Find a motor on the robot named left
+		//fr = hardwareMap.dcMotor.get("FR"); //Find a motor on the robot named right
+		//bl = hardwareMap.dcMotor.get("BL"); //Find a motor on the robot named left
+		//br = hardwareMap.dcMotor.get("BR"); //Find a motor on the robot named right
+		//fr.setDirection(DcMotor.Direction.REVERSE); //somtimes you may need to reverse the direction of a motor to insure positive number run forward and negative numbers run backward
+		//br.setDirection(DcMotor.Direction.REVERSE); //somtimes you may need to reverse the direction of a motor to insure positive number run forward and negative numbers run backward
+
+		servo360 = hardwareMap.crservo.get("CLAWSERVO");
+		servo180 = hardwareMap.servo.get("HALFSERVO");
 
 		//Sensors
 		//Gyro-specific variables
-		gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("GYRO1"); //THIS IS AN I2C DEVICE. Find a Gyro Sensor on the robot named gyroSens. gyroSens is the name that appears in the phones configuration
+		//gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("GYRO1"); //THIS IS AN I2C DEVICE. Find a Gyro Sensor on the robot named gyroSens. gyroSens is the name that appears in the phones configuration
 		/*
 		/////////////////////////Gyro Initialization
 		//You cannot use this gyro initialization code if you are using the GyroClass since the GyroClass has it built in already
@@ -150,14 +155,32 @@ public class WilsonTeleOp extends OpMode
 		*/
 		/////////////////////////////////////////////////////////////////////////////////
 
-
+		/*
 		if(!doneonce) {
 			gyroObject.Turn(270);
 			doneonce = true;
 		}
 		gyroObject.StraightLineUpdate(); //You can use the GyroClass to drive the robot in a straight line using the gyro to maintain your heading. Calling update in the loop keeps updating the robots position. You can stop calling update and stop the motors at anytime to go somewhere else
 		//gyroObject.ResetHeading(); //calling ResetHeading resets the gyro heading to zero. For example, you could use Update() to drive straight for awhile, then change direction, reset the heading, and drive straight again. If you don't reset the heading, the robot would turn itself back to zero degrees again
+		*/
+		servo360.setPower(gamepad1.left_stick_x);
+		telemetry.addData("360", gamepad1.left_stick_x);
 
+		if(gamepad1.y) {
+			// move to 0 degrees.
+			servo180.setPosition(0); //setPosition is for 180 servos
+			telemetry.addData("180", "0.0");
+		} else if (gamepad1.b) {
+			// move to 90 degrees.
+			servo180.setPosition(0.5);
+			telemetry.addData("180", "0.5");
+		}
+		else if (gamepad1.a) {
+			// move to 90 degrees.
+			//servo.setPosition(0.5);
+			servo180.setPosition(1.0);
+			telemetry.addData("pwr", "1");
+		}
 
 		telemetry.update();
 

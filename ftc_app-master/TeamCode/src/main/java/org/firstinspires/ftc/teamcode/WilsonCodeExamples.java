@@ -4,6 +4,7 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.I2cAddr;
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.IrSeekerSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
@@ -33,6 +35,10 @@ public class WilsonCodeExamples extends OpMode
 	private DcMotorController MC1; //class-level variable for the motor controller
 	private DcMotor left; //class-level variable for the left motor.
 	private DcMotor right; //class-level variable for the right motor.
+
+	//Servo variables:
+	private CRServo servo360;
+	private Servo servo180;
 
 	//Sensor variables:
 	//These variables create objects based on the imported classes
@@ -98,6 +104,9 @@ public class WilsonCodeExamples extends OpMode
 		odsSensor = hardwareMap.opticalDistanceSensor.get("OpticalSens"); //THIS IS AN ANALOG DEVICE. Find a ODS Sensor on the robot named OpticalSens. OpticalSens is the name that appears in the phones configuration
 		mySonar = hardwareMap.ultrasonicSensor.get("sonar"); //LEGO DEVICE!! THIS DEVICE MUST BE ATTACHED TO THE LEGACY MODULE. Find a Ultrasonic Sensor on the robot named sonar. sonar is the name that appears in the phones configuration (ONLY WORKS WITH PORTS S5 AND S4)
 
+		//SERVO Configuration
+		servo360 = hardwareMap.crservo.get("FULLSERVO");
+		servo180 = hardwareMap.servo.get("HALFSERVO");
 
 		//Modern Robotics Range Ultrasonic Sensor
 		RANGE1 = hardwareMap.i2cDevice.get("range");
@@ -191,6 +200,29 @@ public class WilsonCodeExamples extends OpMode
 		//left.setPower(gamepad1.left_stick_y); //gamepad1.right_stick_y
 		//right.setPower(gamepad1.right_stick_y); //gamepad1.right_stick_y
 		/////////////////////////////////////////////////////////////////////////////////
+
+		//SERVO EXAMPLES///////////////////////////////////////////////////////////////////////////////
+		servo360.setPower(gamepad1.left_stick_x); //a 360 servo works like a motor. Adjust power level between -1 (anticlockwise) and 1 (clockwise) where 0 is off
+		telemetry.addData("360", gamepad1.left_stick_x);
+
+		if(gamepad1.y) {
+			// move to 0 degrees.
+			servo180.setPosition(0); //setPosition is for 180 servos. value of 0 is starting position
+			telemetry.addData("180", "0.0");
+		} else if (gamepad1.b) {
+			// move to 90 degrees.
+			servo180.setPosition(0.5);
+			telemetry.addData("180", "0.5");
+		}
+		else if (gamepad1.a) {
+			// move to 180 degrees.
+			//servo.setPosition(0.5);
+			servo180.setPosition(1.0);
+			telemetry.addData("pwr", "1");
+		}
+		/////////////////////////////////////////////////////////////////////////////////
+
+
 
 		//GYRO SENSOR EXAMPLE////////////////////////////////////////////////////////////
 		/*
