@@ -11,12 +11,15 @@ public class GyroClass{
     private DcMotor lf, rf, lb, rb;
     private double leftPwr = 0.25;
     private double rightPwr = 0.25;
+    private double remLPwr, remRPwr;
     private int heading = 0;              // Gyro integrated heading
     private boolean allStop = false;
     private int prevLeftValue, prevRightValue;
     private ModernRoboticsI2cGyro gyro;
     private double adjustmentSpeed = 0.50;
     private double speed = 0.0;
+    private final int MAJOR_ERROR_THRESHOLD = 10, MINOR_ERROR_CORRECTION = 3;
+
     Telemetry telemetry;
 
     public GyroClass(ModernRoboticsI2cGyro gyroObject, DcMotor frontLeftMotor, DcMotor frontRightMotor, DcMotor backLeftMotor, DcMotor backRightMotor, double speed, Telemetry telemetry)
@@ -44,9 +47,124 @@ public class GyroClass{
             sleep(50);
             idle();
         }
+        gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
 
-        gyro.resetZAxisIntegrator(); //reset the heading. The sensor only returns a heading for the Z axis
+        ResetHeading(); //reset the heading. The sensor only returns a heading for the Z axis
     }
+
+    private double AdjustPower(double currentValue, double amountOfAdjustment)
+    {
+        //method prevents a motor value from dipping below 50% of the desired speed
+        double start = Math.abs(currentValue);
+        if(Math.abs(currentValue + amountOfAdjustment) > 0.5 * speed && Math.abs(currentValue + amountOfAdjustment) <= 1.0 )
+        {
+            return currentValue + amountOfAdjustment;
+        }
+        else
+        {
+            return currentValue;
+        }
+    }
+
+    public void StraightLineUpdate()
+    {
+        if(allStop) //if I'm stopped due to a major error....
+        {
+            ErrorCorrection(); //fix it first
+        }
+        else //else proceed straight
+        {
+            if (GetHeading() >= MINOR_ERROR_CORRECTION) //if trending RIGHT
+            {
+                leftPwr = AdjustPower(leftPwr,-0.01); //move right by increasing power to left motor
+                rightPwr = AdjustPower(rightPwr,0.01); //and decreasing power on right
+                telemetry.addData("trending", "RIGHT");
+            }
+            else if (GetHeading() <= -MINOR_ERROR_CORRECTION) //if trending LEFT
+            {
+                leftPwr = AdjustPower(leftPwr,0.01); //move right by increasing power to left motor
+                rightPwr = AdjustPower(rightPwr,-0.01); //and decreasing power on right
+                telemetry.addData("trending", "LEFT");
+            }
+            else
+            {
+                telemetry.addData("Normal Operation", ":)");
+            }
+
+            //if major error to LEFT
+            if (GetHeading() > MAJOR_ERROR_THRESHOLD || GetHeading() <= -MAJOR_ERROR_THRESHOLD) //if major error...
+            {
+                remLPwr = leftPwr; //remember what power we were at prior to the problem
+                remRPwr = rightPwr;
+                leftPwr = 0.0; //Stop until corrected
+                rightPwr = 0.0;
+                allStop = true;
+                telemetry.addData("Major err", "ALL STOP");
+            }
+
+            telemetry.addData("LFpwr", leftPwr);
+            telemetry.addData("RFpwr", rightPwr);
+            lf.setPower(leftPwr); //drive the FRONT motors at the calculated speeds
+            rf.setPower(rightPwr);
+            lb.setPower(0.10);
+            rb.setPower(0.10);
+        }
+
+
+        telemetry.addData("heading", GetHeading());
+        telemetry.update();
+    }
+
+    private void ErrorCorrection()
+    {
+        while(GetHeading() > MINOR_ERROR_CORRECTION) //if too far RIGHT, move motors until you're back on course
+        {
+            lf.setPower(-0.10);
+            rf.setPower(0.10);
+            lb.setPower(0.0);
+            rb.setPower(0.0);
+            telemetry.addData("ERROR!!", "TO RIGHT");
+            telemetry.addData("heading", GetHeading());
+            telemetry.addData("LFpwr", leftPwr);
+            telemetry.addData("RFpwr", rightPwr);
+            telemetry.update();
+        }
+
+        while(GetHeading() < -MINOR_ERROR_CORRECTION) //if too far LEFT, move motors until you're back on course
+        {
+            lf.setPower(0.10);
+            rf.setPower(-0.10);
+            lb.setPower(0.0);
+            rb.setPower(0.0);
+            telemetry.addData("ERROR!!", "TO LEFT");
+            telemetry.addData("heading", GetHeading());
+            telemetry.addData("LFpwr", leftPwr);
+            telemetry.addData("RFpwr", rightPwr);
+            telemetry.update();
+        }
+
+        allStop = false; //note that we are done with the error correction
+        leftPwr = remLPwr; //resume normal speed
+        rightPwr = remRPwr;
+        telemetry.addData("problem corrected!", ":)");
+        telemetry.addData("heading", GetHeading());
+        telemetry.addData("LFpwr", leftPwr);
+        telemetry.addData("RFpwr", rightPwr);
+        telemetry.update();
+    }
+
+    private void RunStraight()
+    {
+
+    }
+
+    public void Turn(int newHeading)
+    {
+
+    }
+
+
+    /*
 
     public void StraightLineUpdate()
     {
@@ -55,14 +173,14 @@ public class GyroClass{
 
         if(heading > 180 && heading < 359 && allStop == false) { //if trending left...
             //note these are reverse what you would think because the left motors are reversed
-            leftPwr -= 0.001; //move right by increasing power to left motor
-            rightPwr += 0.001; //and decreasing power on right
+            leftPwr -= 0.01; //move right by increasing power to left motor
+            rightPwr += 0.01; //and decreasing power on right
             telemetry.addData("Minor correct", "TO RIGHT");
         }
 
         if(heading < 180 && heading > 1 && allStop == false) { //if trending right...
-            leftPwr += 0.001; //turn left by decreasing power on left motor
-            rightPwr -= 0.001;
+            leftPwr += 0.01; //turn left by decreasing power on left motor
+            rightPwr -= 0.01;
             telemetry.addData("Minor correct", "TO LEFT");
         }
 
@@ -77,10 +195,8 @@ public class GyroClass{
             }
         }
 
-        lf.setPower(leftPwr);
+        lf.setPower(leftPwr); //drive the FRONT motors at the calculated speeds
         rf.setPower(rightPwr);
-        lb.setPower(leftPwr);
-        rb.setPower(rightPwr);
 
         telemetry.addData("pwr", leftPwr);
 
@@ -92,11 +208,13 @@ public class GyroClass{
                 telemetry.addData("Major correct", "to right");
                 telemetry.update();
 
-                EncoderClass.RunToEncoderDegreeAsync(rf, EncoderClass.MotorType.NeveRest60,20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                EncoderClass.RunToEncoderDegreeAsync(rb, EncoderClass.MotorType.NeveRest60,20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
 
+                EncoderClass.RunToEncoderDegreeAsync(rf, EncoderClass.MotorType.NeveRest60,20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
                 EncoderClass.RunToEncoderDegreeAsync(lf, EncoderClass.MotorType.NeveRest60,-20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                EncoderClass.RunToEncoderDegreeAsync(lb, EncoderClass.MotorType.NeveRest60,-20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+
+
+                //EncoderClass.RunToEncoderDegreeAsync(lb, EncoderClass.MotorType.NeveRest60,-20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                //EncoderClass.RunToEncoderDegreeAsync(rb, EncoderClass.MotorType.NeveRest60,20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
 
                 while (rf.isBusy() || rb.isBusy() || lf.isBusy() || lb.isBusy()) //wait while the motor moves to the desired position
                 {
@@ -133,10 +251,10 @@ public class GyroClass{
                 telemetry.update();
 
                 EncoderClass.RunToEncoderDegreeAsync(rf, EncoderClass.MotorType.NeveRest60,-20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                EncoderClass.RunToEncoderDegreeAsync(rb, EncoderClass.MotorType.NeveRest60,-20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
-
                 EncoderClass.RunToEncoderDegreeAsync(lf, EncoderClass.MotorType.NeveRest60,20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
-                EncoderClass.RunToEncoderDegreeAsync(lb, EncoderClass.MotorType.NeveRest60,20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+
+                //EncoderClass.RunToEncoderDegreeAsync(lb, EncoderClass.MotorType.NeveRest60,20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
+                //EncoderClass.RunToEncoderDegreeAsync(rb, EncoderClass.MotorType.NeveRest60,-20, adjustmentSpeed, false); //use encoders to move the wheels 20 degrees at a time in opposite directions
             }
             catch(NullPointerException ex)
             {
@@ -174,10 +292,7 @@ public class GyroClass{
     //    right.setPower(rightPwr);
     }
 
-    public void ResetHeading()
-    {
-        gyro.resetZAxisIntegrator(); //reset the heading. The sensor only returns a heading for the Z axis
-    }
+
 
     public void Turn(int newHeading)
     {
@@ -258,10 +373,19 @@ public class GyroClass{
         }
 
     }
+    */
+
+
+
+    public void ResetHeading()
+    {
+        gyro.resetZAxisIntegrator(); //reset the heading. The sensor only returns a heading for the Z axis
+    }
 
     public int GetHeading()
     {
-        return gyro.getHeading();
+        //return gyro.getHeading();
+        return -gyro.getIntegratedZValue();
     }
 
     private final void sleep(long milliseconds) {
