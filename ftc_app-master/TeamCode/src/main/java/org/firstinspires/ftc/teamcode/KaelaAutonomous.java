@@ -27,7 +27,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorMROpticalDistance;
 
 @Autonomous(name = "KaelaAutonomous", group = "Auto")
-//@Disabled
+@Disabled
 public class KaelaAutonomous extends LinearOpMode {
 
     //variables

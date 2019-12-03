@@ -51,8 +51,8 @@ public class EvilBots2019TeleOp extends OpMode {
       SLIDE.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //get init values for min and max
-      maxClaw = 300;
-      minClaw = 0;
+      maxClaw = 350;
+      minClaw = -30;
       maxPivot = PIVOT.getCurrentPosition()+0;
       minPivot = PIVOT.getCurrentPosition();
       maxSlide = SLIDE.getCurrentPosition()+0;
@@ -153,6 +153,13 @@ public class EvilBots2019TeleOp extends OpMode {
         }
         else {
               CLAW.setPower(0);
+        }
+        if(inPivotUp){
+            PIVOT.setPower(0.2);
+        }else if(inPivotDown){
+            PIVOT.setPower(-0.2);
+        }else{
+            PIVOT.setPower(0);
         }
         //telemetry
         telemetry.addData("Claw pos",CLAW.getCurrentPosition());
